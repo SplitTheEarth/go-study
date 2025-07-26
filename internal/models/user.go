@@ -20,3 +20,9 @@ type LoginPayload struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
+
+type AnswerPayload struct {
+	UserID     int    `json:"user_id"`
+	QuestionID int    `json:"question"`
+	Answer     string `json:"answer"`
+}

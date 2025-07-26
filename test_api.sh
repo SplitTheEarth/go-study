@@ -54,9 +54,11 @@ curl -s -X POST -H "Content-Type: application/json" \
     "$BASE_URL/api/login"
 
 print_header "Testing Login (Success)"
-curl -s -X POST -H "Content-Type: application/json" \
+LOGIN_RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
     -d '{"email":"test@example.com", "password":"somepassword123"}' \
-    "$BASE_URL/api/login" | jq .
+    "$BASE_URL/api/login")
+echo "$LOGIN_RESPONSE" | jq .
+USER_ID=$(echo "$LOGIN_RESPONSE" | jq .user_id)
 
 # === Decks ===
 print_header "Testing Create Deck 1"
@@ -80,13 +82,25 @@ curl -s -X GET "$BASE_URL/api/decks?id=$DECK1_ID" | jq .
 
 # === Questions ===
 print_header "Testing Add Question to Deck $DECK1_ID"
-curl -s -X POST -H "Content-Type: application/json" \
+QUESTION_RESPONSE=$(curl -s -X POST -H "Content-Type: application/json" \
     -d '{"deckId":'"$DECK1_ID"', "questionText":"What does the `:=` operator do in Go?", "answer":"It declares and initializes a variable.", "options":["It assigns a value", "It compares two values"]}' \
-    "$BASE_URL/api/questions" | jq .
+    "$BASE_URL/api/questions")
+echo "$QUESTION_RESPONSE" | jq .
+QUESTION_ID=$(echo "$QUESTION_RESPONSE" | jq .id)
 
 print_header "Testing List Questions for Deck $DECK1_ID"
 curl -s -X GET "$BASE_URL/api/questions?deck_id=$DECK1_ID" | jq .
 
+# === Answers ===
+print_header "Testing Submit Correct Answer"
+curl -s -X POST -H "Content-Type: application/json" \
+    -d '{"user_id":'"$USER_ID"', "question":'"$QUESTION_ID"', "answer":"It declares and initializes a variable."}' \
+    "$BASE_URL/api/submit" | jq .
+
+print_header "Testing Submit Wrong Answer"
+curl -s -X POST -H "Content-Type: application/json" \
+    -d '{"user_id":'"$USER_ID"', "question":'"$QUESTION_ID"', "answer":"It assigns a value"}' \
+    "$BASE_URL/api/submit" | jq .
 
 # --- Cleanup ---
 print_header "Tests finished. Shutting down server."

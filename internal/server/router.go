@@ -28,6 +28,8 @@ func SetupRoutes() *chi.Mux {
 	r.Post("/api/questions", handlers.AddQuestionHandler)
 	r.Get("/api/questions", handlers.ListQuestionsByDeckHandler)
 
+	r.Post("/api/submit", handlers.SubmitAnswerHandler)
+
 	return r
 }
 
