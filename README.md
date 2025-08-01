@@ -6,7 +6,7 @@ A web-based study application built with Go that allows users to create decks of
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/SplitTheEarth/go-study
    cd study-app
    ```
 
